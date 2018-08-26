@@ -1,10 +1,10 @@
 ## 写给自己的--Java反射
 
-> 作为写了几年Java代码的小菜鸡，反射这个知识点一直只停留在知道、了解的水平，最近在看Android插件化方面的知识，有点小吃力，反思之后-v-，最终总算让我想明白了，是无知限制了我的想象力，痛定思痛，于是有了这篇Java反射的总结--送给自己。
+> 作为写了几年Java代码的小菜鸡，反射这个知识点一直只停留在知道、了解的水平，最近在看Android插件化方面的知识，有点小吃力，反思之后-v-，最终想明白了，是无知限制了我的想象力，痛定思痛，于是有了这篇Java反射的总结--送给自己。
 
 ### 反射的定义
 > Reflection enables Java code to discover information about the fields, methods and constructors of loaded classes, and to use reflected fields, methods, and constructors to operate on their underlying counterparts, within security restrictions. The API accommodates applications that need access to either the public members of a target object (based on its runtime class) or the members declared by a given class. It also allows programs to suppress default reflective access control.
-> 
+>
 > 蹩脚大意翻译：反射能够让Java代码获取一个已经加载的类的字段，方法，构造器等信息，并能够访问它们不受访问权限的控制（private也能访问）
 
 上面反射是Oracle官方文档的定义，反射能够突破访问权限控制，这还是很优秀的，但是，问题来了，**为什么需要反射或者说什么情况下需要用反射？**
@@ -42,4 +42,37 @@ ArrayList arrayList = new ArrayList();
 * new ArrayList().getClass()
 * Class.forName("java.util.ArrayList")
 
-这三种方法都可以获取到对象对应的Class对象，具体使用哪个要看具体情况，比如你只有该类的类名，那么可以选择第三种，再比如你已经有一个该类的类对象，那么可以选择第二种方法。这里要注意一点，**第一种方法只会触发类的加载不会触发类的初始化，第二，三种方法会同时触发类加载和初始化如果需要的话。**
+这三种方法都可以获取到对象对应的Class对象，具体使用哪个要看具体情况，比如你只有该类的类名，那么可以选择第三种，再比如你已经有一个该类的类对象，那么可以选择第二种方法。这里要注意一点，**第一种方法只会触发类的加载不会触发类的初始化，第二，三种方法会同时触发类加载和初始化(如果需要的话)。** 关于这个 我们写一个最简单的demo测试一下
+
+```
+public class TestClassLoader {
+    static {
+        L.d("TestClassLoader class init!");
+    }
+}
+
+...
+
+public static void main(String[] args) {
+    Class<?> clazz = TestClassLoader.class;
+    L.d("after TestClassLoader.class");
+    try {
+        clazz = Class.forName("com.aliouswang.practice.olympic.bean.TestClassLoader");
+        L.d("after Class.forName");
+        TestClassLoader testClassLoader = (TestClassLoader) clazz.newInstance();
+        L.d("after new instance");
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+//控制台打印的结果
+after TestClassLoader.class
+TestClassLoader class init! static value is 100
+after Class.forName
+after new instance
+```
+
+可以看到TestClassLoader 类的静态代码块在Class.forName()方法调用之前被初始化，而调用TestClassLoader.class时并没有触发初始化，这个简单的例子也就验证了我们上面的结论。
+
+
