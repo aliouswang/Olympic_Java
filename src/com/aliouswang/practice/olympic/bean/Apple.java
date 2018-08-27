@@ -12,9 +12,9 @@ public class Apple extends Fruit implements ISeal {
 
     }
 
-    public Apple(int price) {
-        super(price);
-    }
+//    public Apple(int price) {
+//        super(price);
+//    }
 
     private class Color {
 

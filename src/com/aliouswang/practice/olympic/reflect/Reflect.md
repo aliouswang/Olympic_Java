@@ -1,4 +1,4 @@
-## 写给自己的--Java反射
+## 写给自己的--Java反射总结
 
 > 作为写了几年Java代码的小菜鸡，反射这个知识点一直只停留在知道、了解的水平，最近在看Android插件化方面的知识，有点小吃力，反思之后-v-，最终想明白了，是无知限制了我的想象力，痛定思痛，于是有了这篇Java反射的总结--送给自己。
 
@@ -86,7 +86,99 @@ after new instance
 * getDeclaredMethods()      -- 返回当前类所有的Method方法（包括private类型）
 * getDeclaredMethod(String name, Class<?>... parameterTypes) -- 根据参数，返回最匹配的方法
 * getFields()               -- 返回当前类和从父类继承来的public字段
-* getDeclaredFields()       -- 返回当前类和的所有字段（包括private）
+* getDeclaredFields()       -- 返回当前类定义的所有字段（包括private）
+* getDeclaredField(String name) --返回当前类定义的字段通过参数
+
+下面举2个栗子来加深理解.
+#### 第一个栗子
+需求：现在有个Apple类，它继承于Fruit类，Fruit有一个私有方法seal 参数是一个float类型, 现在要求我们通过反射来调用该私有方法
+
+```
+class Apple extends Fruit{}
+class Furit {
+    public Fruit(int price) {this.price = price;}
+    private void seal(int price) {
+        L.d("This fruit is sealed by pruce : ¥" + price);
+    }
+}
+
+private void invokeFruitSeal() {
+    try {
+        //获取Apple类
+        Class clazz = Class.forName("com.aliouswang.practice.olympic.bean.Apple");
+        //获取Apple的直接父类Fruit
+        Class fruitClazz = clazz.getSuperclass();
+        //获取父类的私有构造器
+        Constructor<?> constructor = fruitClazz.getDeclaredConstructor(int.class);
+        //设置私有可访问
+        constructor.setAccessible(true);
+        //通过私有构造器新建Fruit对象
+        Fruit fruit = (Fruit) constructor.newInstance(0);
+        //获取fruit的私有方法
+        Method sealMethod = fruitClazz.getDeclaredMethod("seal", float.class);
+        sealMethod.setAccessible(true);
+        //调用方法
+        sealMethod.invoke(fruit, 998.8f);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+// 查看控制台打印的结果，调用成功
+This fruit is sealed by pruce : ¥998.8
+```
+
+#### 再举一个栗子
+需求：这次我们在Fruit类中新建一个Size类，然后新增一个final的Size常量，我们需要利用反射对其进行修改（这里我希望实验的是修改final常量指针本身）
+
+```
+class Fruit {
+    private final Size size = new Size(50);
+
+    @Override
+    public String toString() {
+        return "fruit size is : " + size;
+    }
+}
+
+private void modifyFruitSize() {
+    try {
+        //获取Apple类
+        Class clazz = Class.forName("com.aliouswang.practice.olympic.bean.Apple");
+        //获取Apple的直接父类Fruit
+        Class fruitClazz = clazz.getSuperclass();
+        //获取父类的私有构造器
+        Constructor<?> constructor = fruitClazz.getDeclaredConstructor(int.class);
+        //设置私有可访问
+        constructor.setAccessible(true);
+        //通过私有构造器新建Fruit对象
+        Fruit fruit = (Fruit) constructor.newInstance(0);
+        //修改之前打印fruit size
+        L.d("before modify fruit size" + fruit);
+        //获取size字段
+        Field sizeField = fruitClazz.getDeclaredField("size");
+        //设置私有可访问
+        sizeField.setAccessible(true);
+        //我们利用反射将size改为非final类型
+        Field modifierField = sizeField.getClass().getDeclaredField("modifiers");
+        modifierField.setAccessible(true);
+        //修改类型
+        int modifiers = sizeField.getModifiers() & ~Modifier.FINAL;
+        modifierField.set(sizeField, modifiers);
+        Size size = new Size(998);
+        //设置新的size
+        sizeField.set(fruit, size);
+        L.d("after modify fruit size" + fruit);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+// 查看控制台打印的结果，调用成功
+before modify fruit sizefruit size is : radius is 50
+after modify fruit sizefruit size is : radius is 998
+```
+
+
 
 
 
