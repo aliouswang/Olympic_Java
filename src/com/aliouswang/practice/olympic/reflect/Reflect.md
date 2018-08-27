@@ -74,5 +74,8 @@ after new instance
 ```
 
 可以看到TestClassLoader 类的静态代码块在Class.forName()方法调用之前被初始化，而调用TestClassLoader.class时并没有触发初始化，这个简单的例子也就验证了我们上面的结论。
+拿到Class对象之后，我们可以操作以下几类对象。
+
+* Interface,
 
 
