@@ -38,7 +38,7 @@ ArrayList arrayList = new ArrayList();
 ### 反射的常规操作
 要使用反射我们就要获得Class对象，获取方法有以下三种
 
-* List.class
+* ArrayList.class
 * new ArrayList().getClass()
 * Class.forName("java.util.ArrayList")
 
@@ -306,7 +306,7 @@ startActivity(new Intent(MainActivity.this, SecondActivity.class));
 ### 反射的缺点
 凡事有得必有失，反射也有它的缺点，反射的缺点主要有2点。
 
-* 我们通过反射获得了灵活性，同时也要付出代价，我们会失去编译器优化我们代码的机会，这样我们的代码执行效率会低一些，但是随着JDK版本的不断升级，性能差距会不会缩小。
+* 我们通过反射获得了灵活性，同时也要付出代价，我们会失去编译器优化我们代码的机会，这样我们的代码执行效率会低一些，但是随着JDK版本的不断升级，性能差距在不断的缩小。
 * 反射打破了我们代码的封装性，增加了维护成本。
 
 为了能比较直观的说明性能下降的问题，我决定做一个 小小的实验，来直观的对比一下，反射代码与原生代码的执行效率对比.
