@@ -74,8 +74,19 @@ after new instance
 ```
 
 可以看到TestClassLoader 类的静态代码块在Class.forName()方法调用之前被初始化，而调用TestClassLoader.class时并没有触发初始化，这个简单的例子也就验证了我们上面的结论。
-拿到Class对象之后，我们可以操作以下几类对象。
+拿到Class对象之后，我们可以操作以下几类对象 类实现的接口、类的内部类、类的构造器、类的成员变量、类的方法，Class都提供了对应的方法来获取它们。
 
-* Interface,
+* getInterfaces()           -- 返回当前类实现的所有接口（不包括从父类继承来的）
+* getClasses()              -- 返回当前类和从父类继承来的public内部类
+* getDeclaredClasses()      -- 返回当前类的所有内部类(包括private类型，但是不包括从父类继承来的)
+* getConstructors()         -- 返回当前类所有的public构造器
+* getDeclaredConstructors() -- 返回当前类所有的构造器（包括private类型）
+* getConstructor(Class<?>... parameterTypes) -- 根据参数，返回最匹配的构造器对象
+* getMethods()              -- 返回当前类和从父类继承来的所有public方法
+* getDeclaredMethods()      -- 返回当前类所有的Method方法（包括private类型）
+* getDeclaredMethod(String name, Class<?>... parameterTypes) -- 根据参数，返回最匹配的方法
+* getFields()               -- 返回当前类和从父类继承来的public字段
+* getDeclaredFields()       -- 返回当前类和的所有字段（包括private）
+
 
 
